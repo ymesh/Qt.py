@@ -214,6 +214,7 @@ _common_members = {
         "qsrand",
     ],
     "QtGui": [
+        "QAction",  # PySide6
         "QAbstractTextDocumentLayout",
         "QActionEvent",
         "QBitmap",
@@ -678,9 +679,17 @@ included in exceptions and warnings.
 """
 
 _missing_members = {
+    "QtCore": {
+        "QRegExp": "has been replaced by QRegularExpression in PySide6",
+    },
     "QtGui": {
         "QMatrix": "Deprecated in PyQt5",
+        "QDesktopWidget": "Deprecated in PySide6",
+        "QRegExpValidator": "has been replaced by QRegularExpressionValidator in PySide6",
     },
+    # "QtWidgets": {
+    #     "QAction": "has been moved to QtGui.QAction in PySide6",
+    # }
 }
 
 
@@ -1006,7 +1015,9 @@ These members from the original submodule are misplaced relative PySide2
 _misplaced_members = {
      "PySide6": {
         "QtCore.QStringListModel": "QtCore.QStringListModel",
-        "QtGui.QStringListModel": "QtCore.QStringListModel",
+        # "QtGui.QStringListModel": "QtCore.QStringListModel",
+        "QtCore.QRegExp": "QtCore.QRegularExpression",
+        "QtGui.QRegExpValidator": "QtGui.QRegularExpressionValidator",
         "QtCore.Property": "QtCore.Property",
         "QtCore.Signal": "QtCore.Signal",
         "QtCore.Slot": "QtCore.Slot",
@@ -1016,9 +1027,9 @@ _misplaced_members = {
         "QtCore.QItemSelectionModel": "QtCore.QItemSelectionModel",
         "QtCore.QItemSelectionRange": "QtCore.QItemSelectionRange",
         "QtUiTools.QUiLoader": ["QtCompat.loadUi", _loadUi],
-        "shiboken2.wrapInstance": ["QtCompat.wrapInstance", _wrapinstance],
-        "shiboken2.getCppPointer": ["QtCompat.getCppPointer", _getcpppointer],
-        "shiboken2.isValid": ["QtCompat.isValid", _isvalid],
+        "shiboken6.wrapInstance": ["QtCompat.wrapInstance", _wrapinstance],
+        "shiboken6.getCppPointer": ["QtCompat.getCppPointer", _getcpppointer],
+        "shiboken6.isValid": ["QtCompat.isValid", _isvalid],
         "QtWidgets.qApp": "QtWidgets.QApplication.instance()",
         "QtCore.QCoreApplication.translate": ["QtCompat.translate", _translate],
         "QtWidgets.QApplication.translate": ["QtCompat.translate", _translate],
@@ -1027,6 +1038,8 @@ _misplaced_members = {
             _qInstallMessageHandler,
         ],
         "QtWidgets.QStyleOptionViewItem": "QtCompat.QStyleOptionViewItemV4",
+        "QtWidgets.QAction": "QtGui.QAction",
+        "QtWidgets.QtActionWidgets": "QtGui.QtActionWidgets",
         "QtMultimedia.QSound": "QtMultimedia.QSound",
     },
     "PySide2": {
