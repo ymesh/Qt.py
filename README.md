@@ -1,7 +1,10 @@
-<img width=260 src=logo.svg>
+<img width=260 src=https://raw.githubusercontent.com/mottosso/Qt.py/master/logo.svg>
 
-[![Downloads](https://pepy.tech/badge/qt-py)](https://pepy.tech/project/qt-py) [![Build Status](https://travis-ci.org/mottosso/Qt.py.svg?branch=master)](https://travis-ci.org/mottosso/Qt.py) [![PyPI version](https://badge.fury.io/py/Qt.py.svg)](https://pypi.python.org/pypi/Qt.py)
-[![Anaconda-Server Badge](https://anaconda.org/conda-forge/qt.py/badges/version.svg)](https://anaconda.org/conda-forge/qt.py) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Qt-py/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Downloads](https://pepy.tech/badge/qt-py)](https://pepy.tech/project/qt-py)
+[![Run Tests](https://github.com/mottosso/Qt.py/actions/workflows/run-tests.yml/badge.svg)](https://github.com/mottosso/Qt.py/actions)
+[![PyPI version](https://badge.fury.io/py/Qt.py.svg)](https://pypi.python.org/pypi/Qt.py)
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/qt.py/badges/version.svg)](https://anaconda.org/conda-forge/qt.py)
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Qt-py/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
 
 Qt.py enables you to write software that runs on any of the 4 supported bindings - PySide2, PyQt5, PySide and PyQt4.
@@ -12,6 +15,8 @@ Qt.py enables you to write software that runs on any of the 4 supported bindings
 
 | Date     | Version   | Event
 |:---------|:----------|:----------
+| May 2024 | [1.4.0][] | Added support for Qt 6
+| Jan 2024 | [1.3.9][] | Run CI on Github Actions, instead of Travis CI.
 | Sep 2020 | [1.3.0][] | Stability improvements and greater ability for `QtCompat.wrapInstance` to do its job
 | Jun 2019 | [1.2.1][] | Bugfixes and [additional members](https://github.com/mottosso/Qt.py/releases/tag/1.2.0)
 | Jan 2018 | [1.1.0][] | Adds new test suite, new members
@@ -29,9 +34,12 @@ Qt.py enables you to write software that runs on any of the 4 supported bindings
 [1.1.0]: https://github.com/mottosso/Qt.py/releases/tag/1.1.0
 [1.2.1]: https://github.com/mottosso/Qt.py/releases/tag/1.2.1
 [1.3.0]: https://github.com/mottosso/Qt.py/releases/tag/1.3.0
+[1.3.9]: https://github.com/mottosso/Qt.py/releases/tag/1.3.9
+[1.4.0]: https://github.com/mottosso/Qt.py/releases/tag/1.4.0
 
 ##### Guides
 
+- [Qt 6 Transition Guide](#qt-6-transition-guide)
 - [Developing with Qt.py](https://fredrikaverpil.github.io/blog/2016/07/25/developing-with-qtpy/)
 - [Dealing with Maya 2017 and PySide2](https://fredrikaverpil.github.io/blog/2016/07/25/dealing-with-maya-2017-and-pyside2/)
 - [Vendoring Qt.py](https://fredrikaverpil.github.io/blog/2017/05/04/vendoring-qtpy/)
@@ -59,6 +67,7 @@ Qt.py enables you to write software that runs on any of the 4 supported bindings
 - [Projects using Qt.py](#projects-using-qtpy)
 - [Projects similar to Qt.py](#projects-similar-to-qtpy)
 - [Developer guide](#developer-guide)
+- [Qt 6 transition guide](#qt-6-transition-guide)
 
 <br>
 <br>
@@ -569,7 +578,7 @@ docker run --rm -v %CD%:/Qt.py -e PYTHON=3.6 fredrikaverpil/qt.py:2018
 # OK
 ```
 
-Now both you and Travis are operating on the same assumptions which means that when the tests pass on your machine, they pass on Travis. And everybody wins!
+Now both you and Github Actions are operating on the same assumptions which means that when the tests pass on your machine, they pass on Github Actions. And everybody wins!
 
 For details on the Docker image for testing, see [`DOCKER.md`](DOCKER.md).
 
@@ -584,3 +593,174 @@ cd Qt.py
 python .\setup.py sdist bdist_wheel
 python -m twine upload .\dist\*
 ```
+
+<br>
+<br>
+<br>
+
+### Qt 6 Transition Guide
+
+| Replace | With | Notes
+|:--------|:-----|:----------------------------
+| `QFont().setWeight(...)` | `QtCompat.QFont.setWeight(font, ...)`
+| `QFont().setWeight(QFont().Bold)` | `QFont().setWeight(QFont.Bold)` | Instance of class doesn't have the enums, apparently
+| `QEvent().Resize` | `QEvent.Resize` | Instance of class doesn't have the enums, seems to apply overall
+| `QtCore.Qt.MidButton`  | `QtCompat.QtCore.Qt.MidButton`
+| `QLabel.setPixmap(str)` | `QLabel.setPixmap(QPixmap())` | Can't take a string anymore (tested in Maya 2025.0)
+| `QModelIndex.child` | `QModel.index` | This one is apparently from Qt 4 and should not have been in Qt.py to begin with
+| | Submit your known issues here! |
+
+##### Removed Members
+
+Many members were removed from Qt.py due to no longer existing in PySide 6.
+
+> If you find where they went, or think some were removed in error, please submit a pull-request!
+
+```json
+"QtCore": [
+    "QAbstractState",
+    "QAbstractTransition",
+    "QEventTransition",
+    "QFinalState",
+    "QSignalTransition",
+    "QTextCodec",
+    "QTextDecoder",
+    "QTextEncoder",
+    "QtCriticalMsg",
+    "QtDebugMsg",
+    "QtFatalMsg",
+    "QtSystemMsg",
+    "QtWarningMsg",
+    "qChecksum",
+    "QPictureIO",
+],
+"QtMultimedia": [
+    "QAbstractVideoBuffer",
+    "QAbstractVideoSurface",
+    "QAudio",
+    "QAudioDeviceInfo",
+    "QAudioFormat",
+    "QAudioInput",
+    "QAudioOutput",
+    "QVideoFrame",
+    "QVideoSurfaceFormat"
+],
+"QtNetwork": [
+    "QNetworkConfiguration",
+    "QNetworkConfigurationManager",
+    "QNetworkSession",
+],
+"QtOpenGL": [
+    "QGL",
+    "QGLContext",
+    "QGLFormat",
+    "QGLWidget"
+],
+"QtSql": [
+    "QSql",
+    "QSqlDatabase",
+    "QSqlDriver",
+    "QSqlDriverCreatorBase",
+    "QSqlError",
+    "QSqlField",
+    "QSqlIndex",
+    "QSqlQuery",
+    "QSqlQueryModel",
+    "QSqlRecord",
+    "QSqlRelation",
+    "QSqlRelationalDelegate",
+    "QSqlRelationalTableModel",
+    "QSqlResult",
+    "QSqlTableModel"
+],
+"QtSvg": [
+    "QSvgGenerator",
+    "QSvgRenderer",
+],
+"QtWidgets": [
+    "QActionGroup",
+    "QDesktopWidget",
+    "QDirModel",
+    "QKeyEventTransition",
+    "QMouseEventTransition",
+    "QUndoCommand",
+    "QUndoGroup",
+    "QUndoStack",
+],
+"QtX11Extras": [
+    "QX11Info"
+],
+"QtXml": [
+    "QXmlAttributes",
+    "QXmlContentHandler",
+    "QXmlDTDHandler",
+    "QXmlDeclHandler",
+    "QXmlDefaultHandler",
+    "QXmlEntityResolver",
+    "QXmlErrorHandler",
+    "QXmlInputSource",
+    "QXmlLexicalHandler",
+    "QXmlLocator",
+    "QXmlNamespaceSupport",
+    "QXmlParseException",
+    "QXmlReader",
+    "QXmlSimpleReader"
+],
+"QtXmlPatterns": [
+    "QAbstractMessageHandler",
+    "QAbstractUriResolver",
+    "QAbstractXmlNodeModel",
+    "QAbstractXmlReceiver",
+    "QSourceLocation",
+    "QXmlFormatter",
+    "QXmlItem",
+    "QXmlName",
+    "QXmlNamePool",
+    "QXmlNodeModelIndex",
+    "QXmlQuery",
+    "QXmlResultItems",
+    "QXmlSchema",
+    "QXmlSchemaValidator",
+    "QXmlSerializer"
+]
+```
+
+##### Static Members Missing from Instances
+
+An overall change is that instances of classes, like `QFont()` no longer provides access to static members, such as `QFont.Bold`. So things like:
+
+```py
+font = QFont()
+font.setWeight(font.Bold)
+```
+
+Must be replaced with:
+
+```py
+font = QFont()
+font.setWeight(QFont.Bold)
+```
+
+Or:
+
+```py
+font.setWeight(type(font).Bold)
+```
+
+Tedious and seemingly unnecessary.. But there you have it!
+
+##### Notes
+
+Qt.py 1.4.0, released in May 2024, added support for Qt 6 whilst preserving compatibility with Qt 4 and 5. That means that in most cases, code you've already written for Qt 4 or 5 will now continue to work with Qt 6, such as Maya 2025.
+
+However, some changes between 5 and 6 require up-front work by you the developer to make your codebase run on Qt 6 whilst continuing to run on Qt 4 and 5.
+
+The above is what we know, please do submit issues and pull-request with what else you find!
+
+- https://github.com/mottosso/Qt.py/issues/new
+
+**See also**
+
+The official PySide2 to PySide6 transition guide, which is especially helpful since Qt.py is modeled after PySide2.
+
+- https://doc.qt.io/qtforpython-6/gettingstarted/porting_from2.html
